@@ -1,0 +1,26 @@
+name: Publicar Imagen en Docker Hub
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v3
+
+      - name: Iniciar sesion en docker hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+
+      - name: Construir y subir imagen
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: Yinetharagon/m1-api:latest
