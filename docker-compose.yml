@@ -21,6 +21,11 @@ services:
       - mysql-data:/var/lib/mysql
     networks:
       - red-cba
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   app-backend:
     build: .
@@ -32,9 +37,17 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     depends_on:
-      - servidor-bd
+      servidor-bd:
+        condition: service_healthy
+      healthcheck:
+        test: ["CMD-SHELL", "curl", "-f", "http://localhost:5000/||exit 1"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
     networks:
       - red-cba
+    
+
 
 volumes:
   mysql-data:
